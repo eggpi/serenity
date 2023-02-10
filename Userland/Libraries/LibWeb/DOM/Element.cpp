@@ -289,6 +289,7 @@ JS::GCPtr<Layout::Node> Element::create_layout_node(NonnullRefPtr<CSS::StyleProp
     return create_layout_node_for_display_type(document(), display, move(style), this);
 }
 
+// https://www.w3.org/TR/css-display/#the-display-properties
 JS::GCPtr<Layout::Node> Element::create_layout_node_for_display_type(DOM::Document& document, CSS::Display const& display, NonnullRefPtr<CSS::StyleProperties> style, Element* element)
 {
     if (display.is_table_inside())
@@ -314,6 +315,10 @@ JS::GCPtr<Layout::Node> Element::create_layout_node_for_display_type(DOM::Docume
     if (display.is_inline_outside()) {
         if (display.is_flow_root_inside())
             return document.heap().allocate_without_realm<Layout::BlockContainer>(document, element, move(style));
+        // https://www.w3.org/TR/css-display/#valdef-display-flow
+        // If its outer display type is inline or run-in, and it is participating in a block or inline formatting context, then it generates an inline box.
+        // Otherwise it generates a block container box.
+        // FIXME: We don't take the formatting context into account here, and always produce an inline box.
         if (display.is_flow_inside())
             return document.heap().allocate_without_realm<Layout::InlineNode>(document, element, move(style));
         if (display.is_flex_inside())

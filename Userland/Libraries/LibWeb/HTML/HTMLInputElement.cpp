@@ -16,7 +16,6 @@
 #include <LibWeb/HTML/HTMLInputElement.h>
 #include <LibWeb/HTML/Scripting/Environments.h>
 #include <LibWeb/Infra/CharacterTypes.h>
-#include <LibWeb/Layout/BlockContainer.h>
 #include <LibWeb/Layout/ButtonBox.h>
 #include <LibWeb/Layout/CheckBox.h>
 #include <LibWeb/Layout/RadioButton.h>
@@ -71,7 +70,7 @@ JS::GCPtr<Layout::Node> HTMLInputElement::create_layout_node(NonnullRefPtr<CSS::
     if (type_state() == TypeAttributeState::RadioButton)
         return heap().allocate_without_realm<Layout::RadioButton>(document(), *this, move(style));
 
-    return heap().allocate_without_realm<Layout::BlockContainer>(document(), this, move(style));
+    return Element::create_layout_node_for_display_type(document(), style->display(), move(style), this);
 }
 
 void HTMLInputElement::set_checked(bool checked, ChangeSource change_source)
